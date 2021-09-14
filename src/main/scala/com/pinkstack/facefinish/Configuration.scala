@@ -1,4 +1,4 @@
-package com.facefinish
+package com.pinkstack.facefinish
 
 import cats._
 import cats.implicits._

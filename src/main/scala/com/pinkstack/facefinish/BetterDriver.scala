@@ -1,13 +1,17 @@
-package com.facefinish
+package com.pinkstack.facefinish
 
 import cats.data.*
-import org.openqa.selenium.{By, WebElement}
+import cats.effect.IO
+import cats.effect.kernel.Resource
+import org.openqa.selenium.{By, OutputType, WebElement}
 import org.openqa.selenium.remote.RemoteWebDriver
 import org.openqa.selenium.support.ui.{ExpectedCondition, ExpectedConditions, WebDriverWait}
 
+import java.io.{BufferedOutputStream, FileOutputStream}
 import java.time.Duration
 
 class BetterDriver(val driver: RemoteWebDriver) {
+
   import collection.JavaConverters._
 
   def findAnd[R](f: WebElement => R)(locator: By) =
@@ -16,11 +20,15 @@ class BetterDriver(val driver: RemoteWebDriver) {
   def findAndSendKeys(locator: By, keys: String) = findAnd(_.sendKeys(keys))(locator)
 
   def findAndClick(locator: By) = findAnd(_.click())(locator)
-  
+
+  def waitUntil[R, C](expectedCondition: ExpectedCondition[C],
+                      defaultDuration: Duration = Duration.ofSeconds(15)) =
+    new WebDriverWait(driver, defaultDuration).until(expectedCondition)
+
   def waitAnd[R, C](locator: By,
                     expectedCondition: ExpectedCondition[C],
                     defaultDuration: Duration = Duration.ofSeconds(15))(f: WebElement => R) = {
-    new WebDriverWait(driver, defaultDuration).until(expectedCondition)
+    waitUntil(expectedCondition, defaultDuration)
     findAnd(f)(locator)
   }
 
@@ -30,9 +38,16 @@ class BetterDriver(val driver: RemoteWebDriver) {
 
   def map[R](locator: By)(f: WebElement => R) =
     driver.findElements(locator).asScala.map(f)
-  
-  def forEach(locator: By)(f: WebElement => Unit) =
+
+  def forEach[R <: Unit](locator: By)(f: WebElement => Unit) =
     map(locator)(f)
+
+  def takeScreenshot(name: String) = {
+    val shot = driver.getScreenshotAs[Array[Byte]](OutputType.BYTES)
+    val stream = new BufferedOutputStream(new FileOutputStream(name))
+    stream.write(shot)
+    stream.close()
+  }
 }
 
 object BetterDriver {

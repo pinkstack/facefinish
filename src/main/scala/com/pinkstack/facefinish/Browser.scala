@@ -1,4 +1,4 @@
-package com.facefinish
+package com.pinkstack.facefinish
 
 import org.openqa.selenium.PageLoadStrategy
 import org.openqa.selenium.chrome.ChromeOptions

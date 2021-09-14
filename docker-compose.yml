@@ -34,6 +34,10 @@ services:
       - "4444:4444"
       - "7900:7900"
     shm_size: 3gb
+    #environment:
+    #  # https://stackoverflow.com/questions/43395659/properties-for-selenium-grid-hub-node-config/43412373#43412373
+    #  # SE_OPTS: "--max-sessions=1 "
+
 
 volumes:
   ovpn-data:

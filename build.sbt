@@ -5,11 +5,10 @@ version := "0.1"
 scalaVersion := "3.0.2"
 
 scalacOptions ++= Seq(
-  "-encoding", "UTF-8",
-  "-language:implicitConversions",
   "-deprecation",
   "-feature",
-  "-unchecked"
+  "-unchecked",
+  "-language:implicitConversions"
 )
 
 val AkkaVersion = "2.6.16"
